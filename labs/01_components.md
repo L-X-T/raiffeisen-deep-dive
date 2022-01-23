@@ -42,10 +42,10 @@ For this lab, we are ausin a new ``CustomerModule`` with a ``BookingHistoryCompo
     import { BookingHistoryComponent } from './booking-history/booking-history.component';
 
     export const CUSTOMER_ROUTES: Routes = [
-        {
-            path: 'customer/booking-history',
-            component: BookingHistoryComponent
-        }
+      {
+        path: 'customer/booking-history',
+        component: BookingHistoryComponent
+      }
     ];
     ```
 
@@ -56,9 +56,9 @@ For this lab, we are ausin a new ``CustomerModule`` with a ``BookingHistoryCompo
 
     import { NgModule } from '@angular/core';
     import { CommonModule } from '@angular/common';
-    import { BookingComponent } from './booking/booking.component';
+    import { BookingHistoryComponent } from './booking-history/booking-history.component';
 
-    // Importe hinzufügen:
+    // Add imports:
     import { RouterModule } from '@angular/router';
     import { CUSTOMER_ROUTES } from './customer.routes';
     import { SharedModule } from '../shared/shared.module';
@@ -68,7 +68,7 @@ For this lab, we are ausin a new ``CustomerModule`` with a ``BookingHistoryCompo
         CommonModule,
         // Add SharedModule:
         SharedModule,
-        // Add RouterModule + Routing Confi:
+        // Add RouterModule + Routing Config:
         RouterModule.forChild(CUSTOMER_ROUTES)
       ],
       declarations: [BookingHistoryComponent]
@@ -84,21 +84,21 @@ For this lab, we are ausin a new ``CustomerModule`` with a ``BookingHistoryCompo
     // src/app/app.module.ts
 
     [...]
-    // Import hinzufügen:
+    // Add import:
     import { CustomerModule } from './customer/customer.module';
 
     @NgModule({
       imports: [
-          [...]
-          // Modul registrieren:
-          CustomerModule
+        [...]
+        // Add module:
+        CustomerModule
       ],
       declarations: [
-          [...]   
+        [...]   
       ],
       providers: [],
       bootstrap: [
-          AppComponent
+        AppComponent
       ]
     })
     export class AppModule { }
@@ -113,7 +113,7 @@ For this lab, we are ausin a new ``CustomerModule`` with a ``BookingHistoryCompo
 
     <li routerLinkActive="active"> 
       <a routerLink="customer/booking-history">
-          <p>Booking History</p>
+        <p>Booking History</p>
       </a>
     </li> 
     [...]
@@ -134,28 +134,23 @@ In this part of the lab, you will implement a tabbed pane. We use it to demonstr
     ng g c shared/controls/tab --export
     ```
 
-2. Please make sure that the _SharedModule_ is both declared and exported as the _SharedModule_.
+2. Please make sure that both components are both declared and exported as the _SharedModule_.
 
 3. Open the generated ``tab.component.ts`` file and add a ``title`` and a ``visible`` property:
 
     ```typescript
     // src/app/shared/controls/tab/tab.component.ts
 
-    import { Component, Input, OnInit } from '@angular/core';
+    import { Component, Input } from '@angular/core';
 
     @Component({
       selector: 'app-tab',
       templateUrl: './tab.component.html',
       styleUrls: ['./tab.component.scss']
     })
-    export class TabComponent implements OnInit {
-
+    export class TabComponent {
       @Input() title = '';
       visible = true;
-
-      ngOnInit(): void {
-      }
-
     }
     ```
 
@@ -165,8 +160,8 @@ In this part of the lab, you will implement a tabbed pane. We use it to demonstr
     <!-- src/app/shared/controls/tab/tab.component.html -->
 
     <div *ngIf="visible">
-        <h2>{{title}}</h2>
-        <ng-content></ng-content>
+      <h2>{{title}}</h2>
+      <ng-content></ng-content>
     </div>
     ```
 
@@ -200,28 +195,28 @@ In this part of the lab, you will implement a tabbed pane. We use it to demonstr
 
 The goal of this lab is to group the tabs with a tabbed-pane. Also, the tabbed-pane shall make sure that only one tab is displayed at a time and display links for switching between them:
 
-```html
-<app-tabbed-pane>
-    <app-tab title="Upcoming Flights">
-        <p>No upcoming flights!</p>
-    </app-tab>
-
-    <app-tab title="Operated Flights">
-        <p>No operated flights!</p>
-    </app-tab>
-
-    <app-tab title="Cancelled Flights">
-        <p>No cancelled flights!</p>
-    </app-tab>
-</app-tabbed-pane>
-```
+   ```html
+   <app-tabbed-pane>
+     <app-tab title="Upcoming Flights">
+       <p>No upcoming flights!</p>
+     </app-tab>
+  
+     <app-tab title="Operated Flights">
+       <p>No operated flights!</p>
+     </app-tab>
+  
+     <app-tab title="Cancelled Flights">
+       <p>No cancelled flights!</p>
+     </app-tab>
+   </app-tabbed-pane>
+   ```
 
 1. Open the file ``tabbed-pane.component.ts`` and extend it as follows:
    
     ```typescript
     // src/app/shared/controls/tabbed-pane/tabbed-pane.component.ts
 
-    import { AfterContentInit, Component, OnInit } from '@angular/core';
+    import { AfterContentInit, Component } from '@angular/core';
     import { TabComponent } from '../tab/tab.component';
 
     @Component({
@@ -229,20 +224,14 @@ The goal of this lab is to group the tabs with a tabbed-pane. Also, the tabbed-p
       templateUrl: './tabbed-pane.component.html',
       styleUrls: ['./tabbed-pane.component.scss']
     })
-    export class TabbedPaneComponent implements OnInit, AfterContentInit {
-
-      tabs: Array<TabComponent> = [];
+    export class TabbedPaneComponent implements AfterContentInit {
+      tabs: TabComponent[] = [];
       activeTab: TabComponent | undefined;
-
-      constructor() { }
 
       ngAfterContentInit(): void {
         if (this.tabs.length > 0) {
           this.activate(this.tabs[0]);
         }
-      }
-
-      ngOnInit(): void {
       }
 
       register(tab: TabComponent): void {
@@ -255,7 +244,6 @@ The goal of this lab is to group the tabs with a tabbed-pane. Also, the tabbed-p
         }
         this.activeTab = active;
       }
-
     }
     ```
 
@@ -266,13 +254,13 @@ The goal of this lab is to group the tabs with a tabbed-pane. Also, the tabbed-p
 
     <div class="tabbed-pane">
         
-        <div class="navigation">
-            <span *ngFor="let tab of tabs" class="tab-link">
-                <a [ngClass]="{active: tab == activeTab}" (click)="activate(tab)">{{tab.title}}</a>
-            </span>
-        </div>
+      <div class="navigation">
+        <span *ngFor="let tab of tabs" class="tab-link">
+          <a [ngClass]="{active: tab == activeTab}" (click)="activate(tab)">{{tab.title}}</a>
+        </span>
+      </div>
 
-        <ng-content></ng-content>
+      <ng-content></ng-content>
     </div>
     ```
 
@@ -282,37 +270,37 @@ The goal of this lab is to group the tabs with a tabbed-pane. Also, the tabbed-p
     /* src/app/shared/controls/tabbed-pane/tabbed-pane.component.(s)css */
 
     .navigation {
-        margin-bottom: 30px;
+      margin-bottom: 30px;
     }
 
     .tab-link {
-        font-size: 16px;
-        padding-bottom: 3px;
-        border-bottom: 5px solid darkseagreen;
-        margin-right: 10px;
+      font-size: 16px;
+      padding-bottom: 3px;
+      border-bottom: 5px solid darkseagreen;
+      margin-right: 10px;
     }
 
     .tab-link a {
-        color: black;
-        cursor: pointer;
+      color: black;
+      cursor: pointer;
     }
 
     .tab-link a:hover {
-        color: orangered;
-        text-decoration: none;
+      color: orangered;
+      text-decoration: none;
     }
 
     .tab-link a.active {
-        color: orangered;
+      color: orangered;
     }
-    ``
+    ```
 
 4. Now, make the ``TabComponent`` to register itself with its parent ``TabbedPaneComponent``. For this, open the file ``tab.component.ts``, inject the ``TabbedPaneComponent`` and call the previously created ``register`` method:
 
     ```typescript
     // src/app/shared/controls/tab/tab.component.ts
 
-    import { Component, Input, OnInit } from '@angular/core';
+    import { Component, Input } from '@angular/core';
     import { TabbedPaneComponent } from '../tabbed-pane/tabbed-pane.component';
 
     @Component({
@@ -320,18 +308,13 @@ The goal of this lab is to group the tabs with a tabbed-pane. Also, the tabbed-p
       templateUrl: './tab.component.html',
       styleUrls: ['./tab.component.scss']
     })
-    export class TabComponent implements OnInit {
-
+    export class TabComponent {
       @Input() title = '';
       visible = true;
 
       constructor(pane: TabbedPaneComponent) {
         pane.register(this);
       }
-
-      ngOnInit(): void {
-      }
-
     }
     ```
 
@@ -339,17 +322,17 @@ The goal of this lab is to group the tabs with a tabbed-pane. Also, the tabbed-p
 
     ```html
     <app-tabbed-pane>
-        <app-tab title="Upcoming Flights">
-            <p>No upcoming flights!</p>
-        </app-tab>
+      <app-tab title="Upcoming Flights">
+        <p>No upcoming flights!</p>
+      </app-tab>
 
-        <app-tab title="Operated Flights">
-            <p>No operated flights!</p>
-        </app-tab>
+      <app-tab title="Operated Flights">
+        <p>No operated flights!</p>
+      </app-tab>
 
-        <app-tab title="Cancelled Flights">
-            <p>No cancelled flights!</p>
-        </app-tab>
+      <app-tab title="Cancelled Flights">
+        <p>No cancelled flights!</p>
+      </app-tab>
     </app-tabbed-pane>
     ```
 
@@ -364,7 +347,7 @@ In this lab, you make your TabbedPane to directly interact with its TabComponent
     ```typescript
     // src/app/shared/controls/tabbed-pane/tabbed-pane.component.ts
 
-    import { AfterContentInit, Component, ContentChildren, OnInit, QueryList } from '@angular/core';
+    import { AfterContentInit, Component, ContentChildren, QueryList } from '@angular/core';
     import { TabComponent } from '../tab/tab.component';
 
     @Component({
@@ -372,13 +355,13 @@ In this lab, you make your TabbedPane to directly interact with its TabComponent
       templateUrl: './tabbed-pane.component.html',
       styleUrls: ['./tabbed-pane.component.scss']
     })
-    export class TabbedPaneComponent implements OnInit, AfterContentInit {
+    export class TabbedPaneComponent implements AfterContentInit {
 
       @ContentChildren(TabComponent)
       tabQueryList: QueryList<TabComponent> | undefined;
 
       activeTab: TabComponent | undefined;
-      currentPage = 0;
+      currentPage = 1;
 
       get tabs(): TabComponent[] {
         return this.tabQueryList?.toArray() ?? [];
@@ -401,17 +384,12 @@ In this lab, you make your TabbedPane to directly interact with its TabComponent
     ```typescript
     // src/app/shared/controls/tab/tab.component.ts
 
-    import { Component, Input, OnInit } from '@angular/core';
+    import { Component, Input } from '@angular/core';
 
     @Component([...])
-    export class TabComponent implements OnInit {
-
+    export class TabComponent {
       @Input() title = '';
       visible = true;
-
-      ngOnInit(): void {
-      }
-
     }
     ```
 
@@ -432,23 +410,17 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
     ```typescript
     // src/app/shared/controls/tab-navigator/tab-navigator.component.ts
 
-    import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+    import { Component, EventEmitter, Input, Output } from '@angular/core';
 
     @Component({
       selector: 'app-tab-navigator',
       templateUrl: './tab-navigator.component.html',
       styleUrls: ['./tab-navigator.component.scss'] // or .css
     })
-    export class TabNavigatorComponent implements OnInit {
-
+    export class TabNavigatorComponent {
       @Input() page = 0;
       @Input() pageCount = 0;
       @Output() pageChange = new EventEmitter<number>();
-
-      constructor() { }
-
-      ngOnInit(): void {
-      }
 
       prev(): void {
         if (this.page <= 1) {
@@ -465,7 +437,6 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
         this.page++;
         this.pageChange.emit(this.page);
       }
-
     }
     ```
 
@@ -487,17 +458,17 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
     /* src/app/shared/controls/tab-navigator/tab-navigator.component.scss */
 
     .tab-navigator {
-        border: 2px solid black;
-        width:150px;
+      border: 2px solid black;
+      width: 150px;
     }
 
     .tab-navigator button {
-        border:none;
-        background-color: inherit;
+      border: none;
+      background-color: inherit;
     }
 
     .tab-navigator .next {
-        float: right;
+      float: right;
     }
     ```
 
@@ -509,13 +480,13 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
 
     <div class="tabbed-pane">
 
-        [...]
+      [...]
 
-        <app-tab-navigator 
-            [page]="this.currentPage" 
-            [pageCount]="this.tabs.length"
-            (pageChange)="pageChange($event)">
-        </app-tab-navigator>
+      <app-tab-navigator 
+        [page]="this.currentPage" 
+        [pageCount]="this.tabs.length"
+        (pageChange)="pageChange($event)">
+      </app-tab-navigator>
     </div>
     ```
 
@@ -524,7 +495,7 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
     ```typescript
     // src/app/shared/controls/tabbed-pane/tabbed-pane.component.ts
 
-    import { AfterContentInit, Component, ContentChildren, OnInit, QueryList } from '@angular/core';
+    import { AfterContentInit, Component, ContentChildren, QueryList } from '@angular/core';
     import { TabComponent } from '../tab/tab.component';
 
     @Component({
@@ -532,7 +503,7 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
       templateUrl: './tabbed-pane.component.html',
       styleUrls: ['./tabbed-pane.component.scss']
     })
-    export class TabbedPaneComponent implements OnInit, AfterContentInit {
+    export class TabbedPaneComponent implements AfterContentInit {
 
       @ContentChildren(TabComponent)
       tabQueryList: QueryList<TabComponent> | undefined;
@@ -546,16 +517,10 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
         return this.tabQueryList?.toArray() ?? [];
       }
 
-      constructor() {
-      }
-
       ngAfterContentInit(): void {
         if (this.tabs.length > 0) {
           this.activate(this.tabs[0]);
         }
-      }
-
-      ngOnInit(): void {
       }
 
       activate(active: TabComponent): void {
@@ -572,7 +537,6 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
       pageChange(page: number): void {
         this.activate(this.tabs[page - 1]);
       }
-
     }
     ```
 
@@ -582,28 +546,28 @@ Now, let's interact with the ``TabbedPane``'s view using ``ViewChild``.
 
 Open the file ``tabbed-pane.component.html`` and introduce a template variable for the ``app-tab-navigator`` using ``#navigator``. Use this template variable to display the current page and to provide two additional buttons for navigating between the tabs (using the ``prev`` and ``next`` method):
    
-```html
-<!-- src/app/shared/controls/tabbed-pane/tabbed-pane.component.html -->
-
-<div class="tabbed-pane">
-
-  [...]
-
-  <app-tab-navigator 
-    #navigator
-    [page]="currentPage"
-    [pageCount]="this.tabs.length"
-    (pageChange)="pageChange($event)">
-  </app-tab-navigator>
-
-  <div>
-      <button (click)="navigator.prev()">Prev</button>
-      {{navigator.page}}
-      <button (click)="navigator.next()">Next</button>
-  </div>
-
-</div>
-```
+   ```html
+   <!-- src/app/shared/controls/tabbed-pane/tabbed-pane.component.html -->
+   
+   <div class="tabbed-pane">
+   
+     [...]
+   
+     <app-tab-navigator 
+       #navigator
+       [page]="currentPage"
+       [pageCount]="this.tabs.length"
+       (pageChange)="pageChange($event)">
+     </app-tab-navigator>
+   
+     <div>
+       <button (click)="navigator.prev()">Prev</button>
+       {{navigator.page}}
+       <button (click)="navigator.next()">Next</button>
+     </div>
+   
+   </div>
+   ```
 
 #### Bonus: Directly Accessing a ViewChild *
 
@@ -616,10 +580,10 @@ Normally, using data bindings is the prefered way of communicating with child co
     <!-- src/app/shared/controls/tabbed-pane/tabbed-pane.component.html -->
 
     <div class="tabbed-pane">
-        [...]
+      [...]
 
-        <app-tab-navigator [page]="currentPage" #navigator>
-        </app-tab-navigator>
+      <app-tab-navigator [page]="currentPage" #navigator>
+      </app-tab-navigator>
     </div>
     ```
 
@@ -628,17 +592,16 @@ Normally, using data bindings is the prefered way of communicating with child co
     ```typescript
     // src/app/shared/controls/tabbed-pane/tabbed-pane.component.ts
 
-    // ViewChild importieren:
-    import { AfterContentInit, AfterViewInit, Component, ContentChildren, OnInit, QueryList, ViewChild } from '@angular/core';
+    // Import ViewChild:
+    import { AfterContentInit, AfterViewInit, Component, ContentChildren, QueryList, ViewChild } from '@angular/core';
 
-    // Hinzufügen:
+    // Add:
     import { TabNavigatorComponent } from '../tab-navigator/tab-navigator.component';
 
     import { TabComponent } from '../tab/tab.component';
 
     @Component([...])
-    export class TabbedPaneComponent implements OnInit, AfterContentInit, AfterViewInit {
-
+    export class TabbedPaneComponent implements AfterContentInit, AfterViewInit {
       @ContentChildren(TabComponent)
       tabQueryList: QueryList<TabComponent> | undefined;
 
@@ -651,9 +614,6 @@ Normally, using data bindings is the prefered way of communicating with child co
 
       get tabs(): TabComponent[] {
         return this.tabQueryList?.toArray() ?? [];
-      }
-
-      constructor() {
       }
 
       // Directly interact with the navigator
@@ -673,12 +633,8 @@ Normally, using data bindings is the prefered way of communicating with child co
           this.activate(this.tabs[0]);
         }
       }
-
-      ngOnInit(): void {
-      }
-
+   
       [...]
-
     }
 
 3. Start your application (if it isn't still running) and assure yourself that the tabbed pane is woking as indented.
@@ -701,13 +657,12 @@ Normally, using data bindings is the prefered way of communicating with child co
     import { Injectable } from '@angular/core';
     import { BehaviorSubject, Subject } from 'rxjs';
 
-    @Injectable()
+    @Injectable({
+      providedIn: 'root'
+    })
     export class TabbedPaneService {
-
       readonly pageCount = new BehaviorSubject<number>(0);
       readonly currentPage = new BehaviorSubject<number>(1);
-
-      constructor() { }
     }
     ```
 
@@ -731,11 +686,9 @@ Normally, using data bindings is the prefered way of communicating with child co
 
       [...]
       
-      constructor(private service: TabbedPaneService) {
-      }
+      constructor(private service: TabbedPaneService) {}
 
       [...]
-
     }
     ```
 
@@ -743,18 +696,19 @@ Normally, using data bindings is the prefered way of communicating with child co
 
     ```typescript
     // src/app/shared/controls/tabbed-pane/tabbed-pane.component.ts
+   
     [...]
 
     // Update this method:
     ngAfterViewInit(): void {
-        this.service.pageCount.next(this.tabs.length);
-        this.service.currentPage.subscribe((page: number) => {
-          // Prevent cycle:
-          if (page === this.currentPage) {
-            return;
-          }
-          this.pageChange(page);
-        });
+      this.service.pageCount.next(this.tabs.length);
+      this.service.currentPage.subscribe((page: number) => {
+        // Prevent cycle:
+        if (page === this.currentPage) {
+          return;
+        }
+        this.pageChange(page);
+      });
     }
 
     [...]
@@ -764,6 +718,7 @@ Normally, using data bindings is the prefered way of communicating with child co
         tab.visible = (tab === active);
       }
       this.activeTab = active;
+   
       // Update:
       this.currentPage = this.tabs.indexOf(active) + 1;
       this.service.currentPage.next(this.currentPage);
@@ -784,16 +739,15 @@ Normally, using data bindings is the prefered way of communicating with child co
       styleUrls: ['./tab-navigator.component.scss']
     })
     export class TabNavigatorComponent implements OnInit {
-
-      // No imports anymore:
+      // No inputs anymore:
       page = 0;
       pageCount = 0;
 
       // Inject service here:
-      constructor(private service: TabbedPaneService) { }
+      constructor(private service: TabbedPaneService) {}
 
       ngOnInit(): void {
-        // Hinzufügen: Von Service benachrichtigen lassen
+        // Subscribe to service:
         this.service.pageCount.subscribe(pageCount => {
           this.pageCount = pageCount;
         });
@@ -808,7 +762,7 @@ Normally, using data bindings is the prefered way of communicating with child co
         }
         this.page--;
 
-        // Add: Notify service:
+        // Notify service:
         this.service.currentPage.next(this.page);
       }
 
@@ -818,9 +772,8 @@ Normally, using data bindings is the prefered way of communicating with child co
         }
         this.page++;
 
-        // Add: Notify service:
+        // Notify service:
         this.service.currentPage.next(this.page);
       }
-
     }
     ```
