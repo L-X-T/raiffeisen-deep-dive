@@ -9,7 +9,7 @@ import { AirportService } from './airport.service';
   styleUrls: ['./airport.component.scss']
 })
 export class AirportComponent implements OnInit {
-  airports$: Observable<string[]>;
+  airports$: Observable<string[]> | undefined;
 
   constructor(private airportService: AirportService) {}
 
