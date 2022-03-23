@@ -8,6 +8,7 @@ import { Flight } from '../flight';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { validateCity } from '../../shared/validation/city-validator';
 import { validateRoundTrip } from '../../shared/validation/round-trip-validator';
+import { FlightService } from '../flight.service';
 
 @Component({
   selector: 'app-flight-edit',
@@ -27,7 +28,7 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanDeactivateComp
 
   valueChangesSubscription: Subscription | undefined;
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder) {
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private flightService: FlightService) {
     this.editForm = this.fb.group({
       id: [1],
       from: [
@@ -38,7 +39,7 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanDeactivateComp
         '',
         [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])]
       ],
-      date: [null, [Validators.required, Validators.minLength(33), Validators.maxLength(33)]]
+      date: [null, [Validators.required]]
     });
 
     this.editForm.validator = validateRoundTrip;
@@ -87,6 +88,24 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanDeactivateComp
   }
 
   save(): void {
-    console.log(this.editForm?.value);
+    this.flight = {
+      ...this.flight,
+      id: this.editForm.value.id,
+      from: this.editForm.value.from,
+      to: this.editForm.value.to,
+      date: this.editForm.value.date
+    };
+
+    if (!this.flight.id) {
+      this.flight.id = 0;
+    }
+
+    console.log('saving...');
+    console.log(this.flight);
+
+    this.flightService.save(this.flight).subscribe((flight) => {
+      this.flight = flight;
+      this.editForm.patchValue(flight);
+    });
   }
 }
