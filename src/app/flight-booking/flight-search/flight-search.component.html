@@ -2,7 +2,7 @@
 
 <h1>Flight Search</h1>
 
-<form #form="ngForm" [roundTrip]="['from','to']">
+<form #form="ngForm" [roundTrip]="['from','to']" [asyncMulti]="['from','to']">
   <div class="form-group">
     <label>From:</label>
     <input [(ngModel)]="from"
@@ -16,9 +16,11 @@
            asyncCity>
   </div>
 
-  <div *ngIf="form?.controls?.from?.pending">... Executing Async Validator ...</div>
+  <div *ngIf="form.controls?.from?.pending">... Executing Async Validator ...</div>
 
-  <flight-validation-errors [errors]="form?.controls?.from?.errors" [fieldLabel]="'From'">
+  <div *ngIf="form.pending">... Executing Async Multi Field Validator ...</div>
+
+  <flight-validation-errors [errors]="form.controls?.from?.errors" [fieldLabel]="'From'">
   </flight-validation-errors>
 
   <div class="form-group">
@@ -36,7 +38,8 @@
   </flight-validation-errors>
 
   <div class="form-group" *ngIf="flights$ | async as flights">
-    <button (click)="search()" class="btn btn-default">
+    <button [disabled]="!to || !from || form.invalid || form.pending"
+            (click)="search()" class="btn btn-default">
       Search
     </button>
 
