@@ -1,17 +1,18 @@
 // src/app/flight-booking/flight-edit/flight-edit.component.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CanDeactivateComponent } from '../../shared/deactivation/can-deactivate.guard';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, Subscription } from 'rxjs';
 import { Flight } from '../flight';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-flight-edit',
   templateUrl: './flight-edit.component.html',
   styleUrls: ['./flight-edit.component.scss']
 })
-export class FlightEditComponent implements OnInit, CanDeactivateComponent {
+export class FlightEditComponent implements OnInit, OnDestroy, CanDeactivateComponent {
   id = 0;
   showDetails = false;
 
@@ -20,7 +21,18 @@ export class FlightEditComponent implements OnInit, CanDeactivateComponent {
 
   flight: Flight | undefined;
 
-  constructor(private route: ActivatedRoute) {}
+  editForm: FormGroup;
+
+  valueChangesSubscription: Subscription | undefined;
+
+  constructor(private route: ActivatedRoute, private fb: FormBuilder) {
+    this.editForm = this.fb.group({
+      id: [1],
+      from: [],
+      to: [],
+      date: []
+    });
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe((p) => {
@@ -30,7 +42,23 @@ export class FlightEditComponent implements OnInit, CanDeactivateComponent {
 
     this.route.data.subscribe((data) => {
       this.flight = data.flight;
+      this.editForm.patchValue(data.flight);
     });
+
+    console.log(this.editForm.value);
+    console.log(this.editForm.valid);
+    console.log(this.editForm.touched);
+    console.log(this.editForm.dirty);
+
+    this.valueChangesSubscription = this.editForm.valueChanges.subscribe((v) => {
+      console.debug('changes', v);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.valueChangesSubscription) {
+      this.valueChangesSubscription.unsubscribe();
+    }
   }
 
   decide(decision: boolean): void {
@@ -46,5 +74,9 @@ export class FlightEditComponent implements OnInit, CanDeactivateComponent {
       this.sender = sender;
       this.showWarning = true;
     });
+  }
+
+  save(): void {
+    console.log(this.editForm?.value);
   }
 }
