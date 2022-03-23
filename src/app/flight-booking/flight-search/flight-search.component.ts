@@ -1,6 +1,6 @@
 // src/app/flight-search/flight-search.component.ts
 
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Flight } from '../flight';
 import { FlightService } from '../flight.service';
 import { DefaultFlightService } from '../default-flight.service';
@@ -9,6 +9,7 @@ import { DefaultFlightService } from '../default-flight.service';
   selector: 'app-flight-search',
   templateUrl: './flight-search.component.html',
   styleUrls: ['./flight-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: FlightService,

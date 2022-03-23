@@ -33,11 +33,15 @@ export class FlightEditComponent implements OnInit, OnDestroy, CanDeactivateComp
       id: [1],
       from: [
         '',
-        [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])]
+        [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])],
+        [],
+        { updateOn: 'blur' }
       ],
       to: [
         '',
-        [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])]
+        [Validators.required, Validators.minLength(3), Validators.maxLength(15), validateCity(['Graz', 'Wien', 'Hamburg', 'Berlin'])],
+        [],
+        { updateOn: 'blur' }
       ],
       date: [null, [Validators.required]]
     });
