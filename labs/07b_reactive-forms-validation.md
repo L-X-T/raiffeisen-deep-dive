@@ -150,9 +150,10 @@ In this exercise you will write a multifield validator that ensures that a diffe
 
     ```typescript
     [...]   
-    export function validateRoundTrip(g: FormGroup): object {
-       let from = g.controls.from;
-       let to = g.controls.to;
+    export function validateRoundTrip(c: AbstractControl): ValidationErrors | null {
+       const form = c as FormGroup;
+       const from = form.controls.from;
+       const to = form.controls.to;
 
        if (!from || !to) return null;
 
