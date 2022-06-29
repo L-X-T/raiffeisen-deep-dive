@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'airport',
@@ -19,6 +19,8 @@ export class AirportComponent implements OnInit, OnDestroy {
   airportsSubscription: Subscription | undefined;
 
   // Unsubscribe with takeUntil Subject
+  takeUntilAirports: string[] = [];
+  onDestroySubject = new Subject<void>();
 
   // flags
   isLoading = true;
@@ -47,6 +49,17 @@ export class AirportComponent implements OnInit, OnDestroy {
 
     this.airportsSubscription = this.airports$.subscribe(this.airportsObserver);
 
+    const takeUntilObserver = {
+      ...this.airportsObserver,
+      next: (airports) => {
+        this.takeUntilAirports = airports;
+        this.isLoading = false;
+        this.isError = false;
+      }
+    };
+
+    this.airports$.pipe(takeUntil(this.onDestroySubject)).subscribe(takeUntilObserver);
+
     console.log('sync code');
   }
 
@@ -56,6 +69,9 @@ export class AirportComponent implements OnInit, OnDestroy {
     }*/
 
     this.airportsSubscription?.unsubscribe();
+
+    this.onDestroySubject.next();
+    this.onDestroySubject.complete();
   }
 
   navigate(): void {

@@ -15,4 +15,12 @@
   <div *ngIf="isError" class="content">
     {{ errorMessage }}
   </div>
+
+  <div *ngIf="!isError" class="content">
+    <div class="row">
+      <div *ngFor="let airport of takeUntilAirports" class="col-lg-3">
+        {{airport}}
+      </div>
+    </div>
+  </div>
 </div>
