@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
-import { delay, takeUntil } from 'rxjs/operators';
+import { delay, share, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'airport',
@@ -30,7 +30,7 @@ export class AirportComponent implements OnInit, OnDestroy {
   constructor(private airportService: AirportService, private router: Router) {}
 
   ngOnInit(): void {
-    this.airports$ = this.airportService.findAll().pipe(delay(3000));
+    this.airports$ = this.airportService.findAll().pipe(delay(3000), share());
 
     this.airportsObserver = {
       next: (airports) => {
