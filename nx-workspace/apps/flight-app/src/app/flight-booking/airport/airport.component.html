@@ -2,11 +2,17 @@
   <div class="header">
     <h1 class="title">Airports</h1>
   </div>
-  <div class="content">
+
+  <div *ngIf="isLoading" class="content">... is loading</div>
+
+  <div *ngIf="!isError" class="content">
     <div class="row">
       <div *ngFor="let airport of airports" class="col-lg-3">
         {{airport}}
       </div>
     </div>
+  </div>
+  <div *ngIf="isError" class="content">
+    {{ errorMessage }}
   </div>
 </div>
