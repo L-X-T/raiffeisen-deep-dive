@@ -10,7 +10,8 @@ import { debounceTime, distinctUntilChanged, filter, map, pairwise, startWith, s
   styleUrls: ['./flight-lookahead.component.css']
 })
 export class FlightLookaheadComponent implements OnInit {
-  control = new FormControl();
+  fromControl: FormControl = new FormControl();
+  toControl: FormControl = new FormControl();
 
   flights$: Observable<Flight[]>;
   isLoading = false;
@@ -30,9 +31,23 @@ export class FlightLookaheadComponent implements OnInit {
       tap((_) => (this.isLoading = false))
     );*/
 
-    const input$: Observable<string> = this.control.valueChanges.pipe(
+    /*const input$: Observable<string> = this.control.valueChanges.pipe(
       debounceTime(300),
       filter((input) => input.length > 2),
+      distinctUntilChanged()
+    );*/
+
+    const fromInput$: Observable<string> = this.fromControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      // filter((input) => input.length > 2),
+      distinctUntilChanged()
+    );
+
+    const toInput$: Observable<string> = this.toControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      // filter((input) => input.length > 2),
       distinctUntilChanged()
     );
 
@@ -43,11 +58,20 @@ export class FlightLookaheadComponent implements OnInit {
       tap((online) => (this.online = online))
     );
 
-    this.flights$ = combineLatest([input$, online$]).pipe(
+    /*this.flights$ = combineLatest([input$, online$]).pipe(
       filter(([_, online]) => online),
       map(([input, _]) => input),
       tap((input) => (this.isLoading = true)),
       switchMap((input: string) => this.load(input)),
+      tap((_) => (this.isLoading = false))
+    );*/
+
+    this.flights$ = combineLatest([fromInput$, toInput$, online$]).pipe(
+      filter(([f, t, online]) => (f || t) && online),
+      map(([from, to, _]) => [from, to]),
+      distinctUntilChanged((x: [from: string, to: string], y: [from: string, to: string]) => x[0] === y[0] && x[1] === y[1]),
+      tap(([from, to]) => (this.isLoading = true)),
+      switchMap(([from, to]) => this.load(from, to)),
       tap((_) => (this.isLoading = false))
     );
 

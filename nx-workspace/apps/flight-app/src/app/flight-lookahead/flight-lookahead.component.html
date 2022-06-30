@@ -6,7 +6,12 @@
   <div class="content">
     <div class="control-group">
       <label>From City</label>
-      <input [formControl]="control" class="form-control" autocomplete="off">
+      <input [formControl]="fromControl" class="form-control" autocomplete="off">
+    </div>
+
+    <div class="control-group">
+      <label>To City</label>
+      <input [formControl]="toControl" class="form-control" autocomplete="off">
     </div>
 
     <div [ngStyle]="{ 'background-color' : online ? 'green' : 'red' }">Online: {{ online }}</div>
