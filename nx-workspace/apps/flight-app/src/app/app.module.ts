@@ -14,11 +14,14 @@ import { HomeComponent } from './home/home.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SharedModule } from './shared/shared.module';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { FlightLookaheadComponent } from './flight-lookahead/flight-lookahead.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     BrowserModule,
     HttpClientModule,
+    ReactiveFormsModule,
     FlightBookingModule,
 
     BrowserAnimationsModule,
@@ -28,7 +31,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     SharedModule.forRoot(),
     RouterModule.forRoot(APP_ROUTES)
   ],
-  declarations: [AppComponent, SidebarComponent, NavbarComponent, HomeComponent, BasketComponent],
+  declarations: [AppComponent, SidebarComponent, NavbarComponent, HomeComponent, BasketComponent, FlightLookaheadComponent],
   providers: [],
   bootstrap: [AppComponent]
 })
