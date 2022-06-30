@@ -8,6 +8,8 @@
       <label>From City</label>
       <input [formControl]="control" class="form-control" autocomplete="off">
     </div>
+
+    <div [ngStyle]="{ 'background-color' : online ? 'green' : 'red' }">Online: {{ online }}</div>
   </div>
 </div>
 
