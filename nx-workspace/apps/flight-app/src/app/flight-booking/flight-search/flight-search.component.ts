@@ -40,14 +40,22 @@ export class FlightSearchComponent implements OnDestroy {
   search(): void {
     if (!this.from || !this.to) return;
 
-    this.flightsSubscription = this.flightService.find(this.from, this.to, this.urgent).subscribe({
+    /*this.flightsSubscription = this.flightService.find(this.from, this.to, this.urgent).subscribe({
       next: (flights) => {
         this.store.dispatch(FlightBookingActions.loadFlightsSuccessfully({ flights }));
       },
       error: (err) => {
         console.warn('find flights error: ', err);
       }
-    });
+    });*/
+
+    this.store.dispatch(
+      FlightBookingActions.loadFlights({
+        from: this.from,
+        to: this.to,
+        urgent: this.urgent
+      })
+    );
   }
 
   delay(): void {
