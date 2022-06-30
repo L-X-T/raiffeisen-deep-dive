@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Flight, FlightService } from '@flight-workspace/flight-lib';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { FlightBookingAppState } from '../+state/flight-booking.reducer';
 import * as FlightBookingActions from '../+state/flight-booking.actions';
 
@@ -47,6 +48,15 @@ export class FlightSearchComponent implements OnDestroy {
   }
 
   delay(): void {
-    this.flightService.delay();
+    this.flights$.pipe(take(1)).subscribe((flights: Flight[]) => {
+      if (flights.length > 0) {
+        const flight = flights[0];
+        const date = new Date(flight.date);
+        const delayedDate = new Date(date.getTime() + 15 * 60 * 1000);
+        const delayedFlight = { ...flight, date: delayedDate.toISOString() };
+
+        this.store.dispatch(FlightBookingActions.updateFlight({ flight: delayedFlight }));
+      }
+    });
   }
 }
