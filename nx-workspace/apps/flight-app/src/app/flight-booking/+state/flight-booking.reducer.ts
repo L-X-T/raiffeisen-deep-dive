@@ -10,22 +10,31 @@ export interface FlightBookingAppState {
 
 export interface State {
   flights: Flight[];
+  isLoading: boolean;
+  errorMessage: string;
   negativeList: number[];
 }
 
 export const initialState: State = {
   flights: [],
+  isLoading: false,
+  errorMessage: '',
   negativeList: [3]
 };
 
 export const reducer = createReducer(
   initialState,
 
-  // on(FlightBookingActions.loadFlights, (state) => state)
+  on(FlightBookingActions.loadFlights, (state) => ({ ...state, flights: [], isLoading: true, errorMessage: '' })),
 
   on(FlightBookingActions.loadFlightsSuccessfully, (state, action) => {
     const flights = action.flights;
-    return { ...state, flights };
+    return { ...state, flights, isLoading: false };
+  }),
+
+  on(FlightBookingActions.loadFlightsError, (state, action) => {
+    const errorMessage = action.error.message;
+    return { ...state, isLoading: false, errorMessage };
   }),
 
   on(FlightBookingActions.updateFlight, (state, action) => {

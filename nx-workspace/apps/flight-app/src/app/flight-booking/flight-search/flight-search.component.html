@@ -28,8 +28,16 @@
           Delay 1st Flight
         </button>
 
+        <div *ngIf="isLoading$ | async">
+          ...loading...
+        </div>
+
         <div *ngIf="flights.length > 0">
-          {{flights.length}} flights found!
+          {{ flights.length}} flights found!
+        </div>
+
+        <div *ngIf="errorMessage$ | async as errorMessage" class="text-danger">
+          {{ errorMessage }} flights found!
         </div>
       </div>
     </form>

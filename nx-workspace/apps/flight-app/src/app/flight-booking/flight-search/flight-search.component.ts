@@ -27,6 +27,9 @@ export class FlightSearchComponent implements OnDestroy {
   flights$ = this.store.select(selectFlightsWithProps({ blackList: [3, 4] }));
   flightsSubscription: Subscription;
 
+  isLoading$ = this.store.select((s) => s.flightBooking.isLoading);
+  errorMessage$ = this.store.select((s) => s.flightBooking.errorMessage);
+
   constructor(private flightService: FlightService, private store: Store<FlightBookingAppState>) {}
 
   get flights(): Flight[] {
