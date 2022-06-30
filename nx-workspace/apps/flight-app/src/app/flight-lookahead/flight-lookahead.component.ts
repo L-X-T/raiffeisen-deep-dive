@@ -1,8 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { Flight, FlightService } from '@flight-workspace/flight-lib';
 import { FormControl } from '@angular/forms';
-import { combineLatest, interval, merge, Observable, Subject } from 'rxjs';
-import { debounceTime, delay, distinctUntilChanged, filter, map, pairwise, startWith, switchMap, tap } from 'rxjs/operators';
+import { combineLatest, interval, merge, Observable, of, Subject } from 'rxjs';
+import {
+  catchError,
+  delay,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  pairwise,
+  retry,
+  startWith,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 
 @Component({
   selector: 'flight-workspace-flight-lookahead',
@@ -92,7 +104,15 @@ export class FlightLookaheadComponent implements OnInit {
   }
 
   load(from: string, to: string = ''): Observable<Flight[]> {
-    return this.flightService.find(from, to).pipe(delay(1000));
+    return this.flightService.find(from, to).pipe(
+      delay(1000),
+      retry(3), // retry for 3 times
+      catchError((err) => {
+        // if all 4 fail catch error
+        console.warn('Error caught: ' + err);
+        return of([]);
+      })
+    );
   }
 
   onRefresh(): void {
