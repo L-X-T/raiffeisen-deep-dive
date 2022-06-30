@@ -6,7 +6,7 @@
   <div class="content">
     <div class="control-group">
       <label>From City</label>
-      <input [formControl]="control" class="form-control">
+      <input [formControl]="control" class="form-control" autocomplete="off">
     </div>
   </div>
 </div>
@@ -14,7 +14,9 @@
 <div class="card">
   <div class="content">
     <div>
-      <span *ngIf="isLoading">... loading ...</span>&nbsp;
+      <span *ngIf="isLoading">... loading ...</span>
+      <span *ngIf="!isLoading && (diff$ | async) as diff">Diff: {{ diff }}</span>
+      &nbsp;
     </div>
 
     <table *ngIf="(flights$ | async) as flights" class="table table-striped">
