@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Flight, FlightService } from '@flight-workspace/flight-lib';
 import { FormControl } from '@angular/forms';
-import { combineLatest, interval, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, pairwise, startWith, switchMap, tap } from 'rxjs/operators';
+import { combineLatest, interval, merge, Observable, Subject } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, filter, map, pairwise, startWith, switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'flight-workspace-flight-lookahead',
@@ -18,6 +18,9 @@ export class FlightLookaheadComponent implements OnInit {
 
   diff$: Observable<number>;
   online = false;
+
+  private refreshClickSubject = new Subject<void>();
+  readonly refreshClick$ = this.refreshClickSubject.asObservable();
 
   constructor(private flightService: FlightService) {}
 
@@ -66,10 +69,16 @@ export class FlightLookaheadComponent implements OnInit {
       tap((_) => (this.isLoading = false))
     );*/
 
-    this.flights$ = combineLatest([fromInput$, toInput$, online$]).pipe(
+    const combined$ = combineLatest([fromInput$, toInput$, online$]).pipe(
+      distinctUntilChanged(
+        (x: [from: string, to: string, online: boolean], y: [from: string, to: string, online: boolean]) => x[0] === y[0] && x[1] === y[1]
+      )
+    );
+    const refresh$ = this.refreshClick$.pipe(map((_) => [this.fromControl.value, this.toControl.value, this.online]));
+
+    this.flights$ = merge(combined$, refresh$).pipe(
       filter(([f, t, online]) => (f || t) && online),
       map(([from, to, _]) => [from, to]),
-      distinctUntilChanged((x: [from: string, to: string], y: [from: string, to: string]) => x[0] === y[0] && x[1] === y[1]),
       tap(([from, to]) => (this.isLoading = true)),
       switchMap(([from, to]) => this.load(from, to)),
       tap((_) => (this.isLoading = false))
@@ -83,6 +92,10 @@ export class FlightLookaheadComponent implements OnInit {
   }
 
   load(from: string, to: string = ''): Observable<Flight[]> {
-    return this.flightService.find(from, to);
+    return this.flightService.find(from, to).pipe(delay(1000));
+  }
+
+  onRefresh(): void {
+    this.refreshClickSubject.next();
   }
 }
