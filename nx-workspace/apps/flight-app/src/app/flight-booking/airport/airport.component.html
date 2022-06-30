@@ -1,34 +1,63 @@
 <div class="card">
   <div class="header">
-    <h1 class="title">Airports</h1>
-  </div>
-
-  <div *ngIf="isLoading" class="content">... is loading</div>
-
-  <div *ngIf="!isError" class="content">
-    <div class="row">
-      <div *ngFor="let airport of airports" class="col-lg-3">
-        {{airport}}
-      </div>
-    </div>
-  </div>
-  <div *ngIf="isError" class="content">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="!isError" class="content">
-    <div class="row">
-      <div *ngFor="let airport of takeUntilAirports" class="col-lg-3">
-        {{airport}}
-      </div>
-    </div>
+    <h1 class="title">Subscription</h1>
   </div>
 
   <div class="content">
-    <div class="row">
-      <div *ngFor="let airport of airports$ | async" class="col-lg-3">
-        {{airport}}
+    <span *ngIf="isLoading">...isLoadingTakeUntil...</span>
+    <span *ngIf="isError">{{ errorMessage }}</span>
+    <span *ngIf="!isLoading && !isError && airports.length === 0">
+      No subscription airports found
+    </span>
+    <div *ngIf="airports.length > 0" class="row">
+      <div class="col-lg-3" *ngFor="let airport of airports">
+        {{ airport }}
       </div>
     </div>
   </div>
 </div>
+
+
+<div class="card">
+  <div class="header">
+    <h1 class="title">Take Until</h1>
+  </div>
+  <div class="content">
+    <span *ngIf="isLoadingTakeUntil">...isLoadingTakeUntil...</span>
+    <span *ngIf="isErrorTakeUntil">{{ errorMessageTakeUntil }}</span>
+    <span *ngIf="!isLoadingTakeUntil && !isErrorTakeUntil && takeUntilAirports.length === 0">
+      No take until airports found
+    </span>
+    <div *ngIf="takeUntilAirports.length > 0" class="row">
+      <div class="col-lg-3" *ngFor="let airport of takeUntilAirports">
+        {{ airport }}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="header">
+    <h1 class="title">Async Pipe</h1>
+  </div>
+  <div class="content" *ngIf="(asyncAirports$ | async) as asyncAirports else isLoadingAsyncAirports">
+    <span *ngIf="isErrorAsyncPipe">{{ errorMessageAsyncPipe }}</span>
+    <div *ngIf="asyncAirports.length > 0 else noAirportsFound" class="row">
+      <div class="col-lg-3" *ngFor="let airport of asyncAirports">
+        {{ airport }}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #isLoadingAsyncAirports>
+  <div class="content">
+    <span>...isLoadingAsyncPipe...</span>
+  </div>
+</ng-template>
+
+<ng-template #noAirportsFound>
+  <span *ngIf="!isErrorAsyncPipe">No async pipe airports found</span>
+</ng-template>
