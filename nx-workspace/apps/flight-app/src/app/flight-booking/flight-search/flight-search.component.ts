@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { FlightBookingAppState } from '../+state/flight-booking.reducer';
 import * as FlightBookingActions from '../+state/flight-booking.actions';
-import { selectFilteredFlights } from '../+state/flight-booking.selectors';
+import { selectFlightsWithProps } from '../+state/flight-booking.selectors';
 
 @Component({
   selector: 'flight-search',
@@ -23,7 +23,8 @@ export class FlightSearchComponent implements OnDestroy {
   };
 
   // flights$ = this.store.select((s) => s.flightBooking.flights);
-  flights$ = this.store.select(selectFilteredFlights);
+  // flights$ = this.store.select(selectFilteredFlights);
+  flights$ = this.store.select(selectFlightsWithProps({ blackList: [3, 4] }));
   flightsSubscription: Subscription;
 
   constructor(private flightService: FlightService, private store: Store<FlightBookingAppState>) {}
